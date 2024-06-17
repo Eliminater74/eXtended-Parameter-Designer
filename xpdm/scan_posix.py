@@ -15,7 +15,7 @@ def comports(available_only=True):
     Order is a helper to get sorted lists. it can be ignored otherwise."""
     order = 1
     # Common Unix USB serial device names
-    for port in sorted (glob.glob('/dev/ttyUSB*') + glob.glob('/dev/tty.usbserial*')):
+    for port in sorted(glob.glob('/dev/ttyUSB*') + glob.glob('/dev/tty.usbserial*')):
         # this would give wrong results on opened com ports
         #if available_only:
         #    try:
