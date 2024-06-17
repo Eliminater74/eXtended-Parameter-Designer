@@ -86,7 +86,7 @@ SetupDiGetDeviceRegistryProperty.argtypes = [HDEVINFO, PSP_DEVINFO_DATA, DWORD, 
 SetupDiGetDeviceRegistryProperty.restype = BOOL
 
 
-GUID_CLASS_COMPORT = GUID(0x86e0d1e0L, 0x8089, 0x11d0,
+GUID_CLASS_COMPORT = GUID(0x86e0d1e0, 0x8089, 0x11d0,
     (ctypes.c_ubyte*8)(0x9c, 0xe4, 0x08, 0x00, 0x3e, 0x30, 0x1f, 0x73))
 
 DIGCF_PRESENT = 2
@@ -106,8 +106,7 @@ def comports(available_only=True):
     flags = DIGCF_DEVICEINTERFACE
     if available_only:
         flags |= DIGCF_PRESENT
-    g_hdi = SetupDiGetClassDevs(ctypes.byref(GUID_CLASS_COMPORT), None, NULL, flags);
-    #~ for i in range(256):
+    g_hdi = SetupDiGetClassDevs(ctypes.byref(GUID_CLASS_COMPORT), None, NULL, flags)
     for dwIndex in range(256):
         did = SP_DEVICE_INTERFACE_DATA()
         did.cbSize = ctypes.sizeof(did)
@@ -141,7 +140,7 @@ def comports(available_only=True):
                 ('DevicePath', CHAR*(dwNeeded.value - ctypes.sizeof(DWORD))),
             ]
             def __str__(self):
-                return "DevicePath:%s" % (self.DevicePath,)
+                return "DevicePath:%s" % (self.DevicePath.decode('utf-8'),)
         idd = SP_DEVICE_INTERFACE_DETAIL_DATA_A()
         idd.cbSize = SIZEOF_SP_DEVICE_INTERFACE_DETAIL_DATA_A
         devinfo = SP_DEVINFO_DATA()
@@ -191,20 +190,20 @@ def comports(available_only=True):
                     ctypes.byref(szFriendlyName), ctypes.sizeof(szFriendlyName) - 1,
                     None
                 ):
-                    port_name = "\\\\.\\" + szFriendlyName.value
+                    port_name = "\\\\.\\" + szFriendlyName.value.decode('utf-8')
                     order = None
                 else:
-                    port_name = szFriendlyName.value
+                    port_name = szFriendlyName.value.decode('utf-8')
                     order = None
         else:
             try:
-                m = re.search(r"\((.*?(\d+))\)", szFriendlyName.value)
+                m = re.search(r"\((.*?(\d+))\)", szFriendlyName.value.decode('utf-8'))
                 #~ print szFriendlyName.value, m.groups()
                 port_name = m.group(1)
                 order = int(m.group(2))
-            except AttributeError, msg:
-                port_name = szFriendlyName.value
+            except AttributeError as msg:
+                port_name = szFriendlyName.value.decode('utf-8')
                 order = None
-        yield order, port_name, szFriendlyName.value, szHardwareID.value
+        yield order, port_name, szFriendlyName.value.decode('utf-8'), szHardwareID.value.decode('utf-8')
 
     SetupDiDestroyDeviceInfoList(g_hdi)
