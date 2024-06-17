@@ -1,0 +1,4 @@
+pyserial>=3.4
+pygtk>=2.24.0
+pygobject>=3.30.4
+pango>=1.44.7
