@@ -40,6 +40,8 @@ except ImportError:
     print("This program requires PyGTK to run")
     sys.exit(1)
 
+import KT  # Import the KT module here
+
 # check PySerial version number
 from distutils.version import LooseVersion
 # PySerial version 2.3 incorrectly reports version 1.35... eeek!
